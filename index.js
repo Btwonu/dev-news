@@ -15,6 +15,10 @@ const {
   getLimited,
 } = require('./services/articleService');
 
+app.get('/', (req, res) => {
+  res.end('hello, val');
+});
+
 app.get('/smashing/:pageId?', (req, res) => {
   const pageId = req.params.pageId;
 
