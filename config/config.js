@@ -1,4 +1,8 @@
 module.exports = {
+  DB: {
+    uri: 'mongodb://localhost:27017/dev-news-test',
+    options: { useNewUrlParser: true, useUnifiedTopology: true },
+  },
   smashing: {
     baseURL: 'https://www.smashingmagazine.com',
     articleURL: 'https://www.smashingmagazine.com/articles/',
