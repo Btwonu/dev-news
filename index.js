@@ -1,11 +1,9 @@
 const express = require('express');
-const path = require('path');
 const PORT = process.env.PORT || 5000;
-const cors = require('cors');
 const app = express();
 
-app.use(cors());
-app.use(express.urlencoded({ extended: false }));
+require('./config/express')(app);
+require('./config/db');
 
 const {
   getSmashing,
@@ -49,4 +47,4 @@ app.get('/hackernews/:pageId?', (req, res) => {
     .catch((err) => console.log(err));
 });
 
-app.listen(PORT, () => console.log(`Listening on ${PORT}`));
+app.listen(PORT, () => console.log(`Running on http://localhost:${PORT}`));
