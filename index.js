@@ -17,6 +17,16 @@ app.get('/', (req, res) => {
   res.end('hello, val');
 });
 
+app.get('/seed', (req, res) => {
+  Promise.all([getSmashing(), getLimited(2)])
+    .then((data) => {
+      console.log('All resolved!');
+      // console.log(data);
+      res.json(data);
+    })
+    .catch((err) => console.error(err));
+});
+
 app.get('/smashing/:pageId?', (req, res) => {
   const pageId = req.params.pageId;
 

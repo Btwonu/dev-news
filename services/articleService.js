@@ -23,7 +23,7 @@ const getSmashing = async (n) => {
         .text()
         .replace(/\s+/g, ' ')
         .replace(' Read more… ', ''),
-      readMore: smashing.baseURL + $('.read-more-link', this).attr('href'),
+      articleURL: smashing.baseURL + $('.read-more-link', this).attr('href'),
     };
 
     articles.push(articleObj);
@@ -48,7 +48,12 @@ const getHackernewsById = async (id) => {
   const url = `${hackernews.articleURL}/${id}.json`;
 
   return fetch(url)
-    .then((res) => res.json())
+    .then((singleArticle) => {
+      return {
+        title: singleArticle.title,
+        articleURL: singleArticle.url,
+      };
+    })
     .catch((err) => console.log(err));
 };
 
