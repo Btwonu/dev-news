@@ -5,8 +5,14 @@ const addArticles = async (articleArray) => {
   const articles = await Article.insertMany(articleArray, { ordered: false });
 
   console.log('from mongoose:', articles);
+  return articles;
+};
+
+const getArticles = async () => {
+  return await Article.find({}).lean();
 };
 
 module.exports = {
   addArticles,
+  getArticles,
 };

@@ -13,7 +13,7 @@ const {
   getLimited,
   getFCCArticles,
 } = require('./services/articleService');
-const { addArticles } = require('./services/mongoService');
+const { addArticles, getArticles } = require('./services/mongoService');
 
 app.get('/', (req, res) => {
   res.end('hello, val');
@@ -38,7 +38,11 @@ app.get('/seed', (req, res) => {
 });
 
 app.get('/articles', (req, res) => {
-  res.end('retrieve articles');
+  getArticles()
+    .then((articles) => {
+      res.json(articles);
+    })
+    .catch((err) => console.error(err));
 });
 
 app.get('/smashing/:pageId?', (req, res) => {
