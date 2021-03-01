@@ -2,6 +2,7 @@ const fs = require('fs');
 const fetch = require('node-fetch');
 const cheerio = require('cheerio');
 const puppeteer = require('puppeteer');
+const { getLinkPreview } = require('link-preview-js');
 const {
   smashing,
   hackernoon,
@@ -20,23 +21,50 @@ const getSmashing = async (n) => {
   const html = await response.text();
 
   const $ = cheerio.load(html);
+  const articleSelector =
+    '#main > section > .container > .row > .col-12 article';
 
-  const articles = [];
+  let articles = [];
+  let promises = [];
 
-  $('#main > section > .container > .row > .col-12 article').each(function (i) {
-    const articleObj = {
-      title: $('.article--post__title', this).text().replace(/\s+/g, ' '),
-      summary: $('.article--post__content > p', this)
-        .text()
-        .replace(/\s+/g, ' ')
-        .replace(' Read more… ', ''),
-      articleURL: smashing.baseURL + $('.read-more-link', this).attr('href'),
-    };
+  $(articleSelector).each(async function (i) {
+    let title = $('.article--post__title', this).text().replace(/\s+/g, ' ');
 
-    articles.push(articleObj);
+    let summary = $('.article--post__content > p', this)
+      .text()
+      .replace(/\s+/g, ' ')
+      .replace(' Read more… ', '');
+
+    let articleURL = smashing.baseURL + $('.read-more-link', this).attr('href');
+
+    let myPromise = new Promise((resolve, reject) => {
+      getLinkPreview(articleURL).then(function (linkPreview) {
+        const imageURL = linkPreview.images[0];
+
+        const articleObj = {
+          title,
+          summary,
+          articleURL,
+          imageURL,
+        };
+
+        // console.log(articleObj);
+
+        articles.push(articleObj);
+        resolve();
+      });
+    });
+
+    console.log('myPromise', myPromise);
+    promises.push(myPromise);
   });
 
-  return articles;
+  Promise.all(promises).then((articles) => {
+    console.log(articles);
+    return articles;
+  });
+
+  // console.log(articles);
 };
 
 const getHackernoon = async () => {
