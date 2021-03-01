@@ -12,6 +12,10 @@ const articleSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
+  creationDate: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 articleSchema

@@ -13,6 +13,7 @@ const {
   getLimited,
   getFCCArticles,
 } = require('./services/articleService');
+const { addArticles } = require('./services/mongoService');
 
 app.get('/', (req, res) => {
   res.end('hello, val');
@@ -20,12 +21,24 @@ app.get('/', (req, res) => {
 
 app.get('/seed', (req, res) => {
   Promise.all([getSmashing(), getLimited(2), getFCCArticles()])
-    .then((data) => {
+    .then((articleMatrix) => {
       console.log('All resolved!');
-      // console.log(data);
-      res.json(data);
+
+      articleMatrix.forEach((articleArr, i) => {
+        addArticles(articleArr)
+          .then((data) => {
+            console.log(`Array ${i} saved!`);
+            console.log({ data });
+            res.end('seeded');
+          })
+          .catch((err) => console.error(err));
+      });
     })
     .catch((err) => console.error(err));
+});
+
+app.get('/articles', (req, res) => {
+  res.end('retrieve articles');
 });
 
 app.get('/smashing/:pageId?', (req, res) => {
