@@ -1,6 +1,13 @@
+const fs = require('fs');
 const fetch = require('node-fetch');
 const cheerio = require('cheerio');
-const { smashing, hackernoon, hackernews } = require('../config/config.js');
+const puppeteer = require('puppeteer');
+const {
+  smashing,
+  hackernoon,
+  hackernews,
+  freecodecamp,
+} = require('../config/config.js');
 
 const getSmashing = async (n) => {
   let url = smashing.articleURL;
@@ -70,10 +77,60 @@ const getLimited = async (n) => {
   return stories;
 };
 
+const getFCCArticles = async () => {
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
+  page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
+
+  await page.goto(freecodecamp.articleURL);
+
+  const mainSelector = '#site-main';
+  const readMoreBtnSelector = '#readMoreBtn';
+
+  await page.waitForSelector(mainSelector);
+  await page.waitForSelector(readMoreBtnSelector);
+
+  // const readMoreBtn = document.getElementById(readMoreBtnSelector);
+  await page.click(readMoreBtnSelector);
+  await page.waitForSelector(
+    '#site-main > div > div.post-feed article:nth-child(26)'
+  );
+
+  const articles = await page.evaluate(async (mainSelector) => {
+    console.log(`url is ${location.href}`);
+
+    const mainElement = document.querySelector(mainSelector);
+    let articleArray = Array.from(
+      mainElement.querySelectorAll('.post-feed > article')
+    );
+
+    return articleArray.map((article) => {
+      const articleURL = article.querySelector('a').href;
+      const imageURL = article.querySelector('img').src;
+
+      const headerChildren = Array.from(
+        article.querySelector('.post-card-content > div > header').children
+      );
+      const [tags, title] = headerChildren.map((child) => child.innerText);
+
+      return {
+        title,
+        tags,
+        imageURL,
+        articleURL,
+      };
+    });
+  }, mainSelector);
+
+  await browser.close();
+  return articles;
+};
+
 module.exports = {
   getSmashing,
   getHackernoon,
   getHackernews,
   getHackernewsById,
   getLimited,
+  getFCCArticles,
 };

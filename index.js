@@ -11,6 +11,7 @@ const {
   getHackernews,
   getHackernewsById,
   getLimited,
+  getFCCArticles,
 } = require('./services/articleService');
 
 app.get('/', (req, res) => {
@@ -18,7 +19,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/seed', (req, res) => {
-  Promise.all([getSmashing(), getLimited(2)])
+  Promise.all([getSmashing(), getLimited(2), getFCCArticles()])
     .then((data) => {
       console.log('All resolved!');
       // console.log(data);
