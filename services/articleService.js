@@ -47,14 +47,12 @@ const getHackernews = async () => {
 const getHackernewsById = async (id) => {
   const url = `${hackernews.articleURL}/${id}.json`;
 
-  return fetch(url)
-    .then((singleArticle) => {
-      return {
-        title: singleArticle.title,
-        articleURL: singleArticle.url,
-      };
-    })
-    .catch((err) => console.log(err));
+  const response = await fetch(url).then((res) => res.json());
+
+  return {
+    title: response.title,
+    articleURL: response.url,
+  };
 };
 
 const getLimited = async (n) => {
