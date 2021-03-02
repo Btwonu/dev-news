@@ -17,8 +17,8 @@ const getSmashing = async (n) => {
     url += `/page/${n}`;
   }
 
-  const response = await fetch(url);
-  const html = await response.text();
+  let response = await fetch(url);
+  let html = await response.text();
 
   const $ = cheerio.load(html);
   const articleSelector =
@@ -38,7 +38,7 @@ const getSmashing = async (n) => {
 
     let myPromise = new Promise((resolve, reject) => {
       getLinkPreview(articleURL).then(function (linkPreview) {
-        const imageURL = linkPreview.images[0];
+        let imageURL = linkPreview.images[0];
 
         const articleObj = {
           title,
@@ -72,26 +72,34 @@ const getHackernews = async () => {
 };
 
 const getHackernewsById = async (id) => {
-  const url = `${hackernews.articleURL}/${id}.json`;
+  let url = `${hackernews.articleURL}/${id}.json`;
 
-  const response = await fetch(url).then((res) => res.json());
+  let response = await fetch(url).then((res) => res.json());
 
+  // imageURL
+  let imageURL = await getLinkPreview(response.url).then(
+    (res) => res.images[0]
+  );
+
+  // structure output of hackernews articles
   return {
     title: response.title,
     articleURL: response.url,
+    imageURL,
   };
 };
 
 const getLimited = async (n) => {
-  const limit = n * 10;
-  const start = limit - 10;
+  // Refactor page/parameter logic
+  let limit = n * 10;
+  let start = limit - 10;
 
-  const topStoriesIds = await getHackernews();
-  const promiseArray = await topStoriesIds
+  let topStoriesIds = await getHackernews();
+  let promiseArray = await topStoriesIds
     .slice(start, limit)
     .map((storyId) => getHackernewsById(storyId));
 
-  const stories = await Promise.all(promiseArray);
+  let stories = await Promise.all(promiseArray);
 
   console.log('Stories length:', stories.length);
   return stories;
@@ -116,7 +124,7 @@ const getFCCArticles = async () => {
     '#site-main > div > div.post-feed article:nth-child(26)'
   );
 
-  const articles = await page.evaluate(async (mainSelector) => {
+  let articles = await page.evaluate(async (mainSelector) => {
     console.log(`url is ${location.href}`);
 
     const mainElement = document.querySelector(mainSelector);
@@ -125,13 +133,13 @@ const getFCCArticles = async () => {
     );
 
     return articleArray.map((article) => {
-      const articleURL = article.querySelector('a').href;
-      const imageURL = article.querySelector('img').src;
+      let articleURL = article.querySelector('a').href;
+      let imageURL = article.querySelector('img').src;
 
-      const headerChildren = Array.from(
+      let headerChildren = Array.from(
         article.querySelector('.post-card-content > div > header').children
       );
-      const [tags, title] = headerChildren.map((child) => child.innerText);
+      let [tags, title] = headerChildren.map((child) => child.innerText);
 
       return {
         title,
