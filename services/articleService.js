@@ -110,26 +110,25 @@ const getFCCArticles = async () => {
   const page = await browser.newPage();
   page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
 
+  const mainSelector = '#site-main';
+  // const readMoreBtnSelector = '#readMoreBtn';
+
   await page.goto(freecodecamp.articleURL);
 
-  const mainSelector = '#site-main';
-  const readMoreBtnSelector = '#readMoreBtn';
-
   await page.waitForSelector(mainSelector);
-  await page.waitForSelector(readMoreBtnSelector);
+  // await page.waitForSelector(readMoreBtnSelector);
 
-  // const readMoreBtn = document.getElementById(readMoreBtnSelector);
-  await page.click(readMoreBtnSelector);
-  await page.waitForSelector(
-    '#site-main > div > div.post-feed article:nth-child(26)'
-  );
+  // await page.click(readMoreBtnSelector);
+  // await page.waitForSelector(
+  //   '#site-main > div > div.post-feed article:nth-child(26)'
+  // );
 
   let articles = await page.evaluate(async (mainSelector) => {
-    console.log(`url is ${location.href}`);
-
+    const articlesSelector = '.post-feed > article';
     const mainElement = document.querySelector(mainSelector);
-    let articleArray = Array.from(
-      mainElement.querySelectorAll('.post-feed > article')
+
+    const articleArray = Array.from(
+      mainElement.querySelectorAll(articlesSelector)
     );
 
     return articleArray.map((article) => {
