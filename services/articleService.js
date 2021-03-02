@@ -24,10 +24,9 @@ const getSmashing = async (n) => {
   const articleSelector =
     '#main > section > .container > .row > .col-12 article';
 
-  let articles = [];
   let promises = [];
 
-  $(articleSelector).each(async function (i) {
+  $(articleSelector).each(function (i) {
     let title = $('.article--post__title', this).text().replace(/\s+/g, ' ');
 
     let summary = $('.article--post__content > p', this)
@@ -48,23 +47,16 @@ const getSmashing = async (n) => {
           imageURL,
         };
 
-        // console.log(articleObj);
-
-        articles.push(articleObj);
-        resolve();
+        resolve(articleObj);
       });
     });
 
-    console.log('myPromise', myPromise);
     promises.push(myPromise);
   });
 
-  Promise.all(promises).then((articles) => {
-    console.log(articles);
+  return Promise.all(promises).then((articles) => {
     return articles;
   });
-
-  // console.log(articles);
 };
 
 const getHackernoon = async () => {
