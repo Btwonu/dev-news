@@ -24,7 +24,7 @@ const getSmashing = async (n) => {
   const articleSelector =
     '#main > section > .container > .row > .col-12 article';
 
-  let promises = [];
+  let articlePromiseArray = [];
 
   $(articleSelector).each(function (i) {
     let title = $('.article--post__title', this).text().replace(/\s+/g, ' ');
@@ -51,10 +51,10 @@ const getSmashing = async (n) => {
       });
     });
 
-    promises.push(myPromise);
+    articlePromiseArray.push(myPromise);
   });
 
-  return Promise.all(promises).then((articles) => {
+  return Promise.all(articlePromiseArray).then((articles) => {
     return articles;
   });
 };
